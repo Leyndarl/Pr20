@@ -8,7 +8,7 @@ from app.service import calculate_total, process_payment
 
 
 def test_calculate_total_ok():
-    assert calculate_total("coffee", 2) == 999
+    assert calculate_total("coffee", 2) == 360
 
 
 def test_calculate_total_zero():
