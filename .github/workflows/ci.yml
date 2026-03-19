@@ -1,4 +1,4 @@
-﻿name: CI
+name: CI/CD Pipeline
 
 on:
   push:
@@ -20,3 +20,33 @@ jobs:
           pip install -r requirements.txt
 
       - run: pytest -q
+
+  package:
+    needs: tests
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create build directory
+        run: mkdir -p build
+
+      - name: Copy project files
+        run: |
+          cp -r app build/
+          cp -r tests build/
+          cp requirements.txt build/
+          cp README.md build/ || true
+
+      - name: Create archive
+        run: |
+          cd build
+          zip -r ../project-${{ github.sha }}.zip .
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: project-build-${{ github.sha }}
+          path: project-${{ github.sha }}.zip
+          retention-days: 7
